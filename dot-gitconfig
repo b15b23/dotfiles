@@ -1,0 +1,47 @@
+[commit]
+  gpgsign = true
+
+[core]
+  excludesfile = ~/.gitignore_global
+
+[diff]
+  tool = Kaleidoscope
+
+[difftool]
+  prompt = false
+  trustExitCode = true
+
+[difftool "Kaleidoscope"]
+  cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+
+[gpg]
+  format = ssh
+
+[gpg "ssh"]
+  allowedSignersFile = ~/.ssh/allowed_signers
+
+[include]
+  path = ~/.gitconfig.user
+
+[init]
+  defaultBranch = main
+
+[merge]
+  tool = Kaleidoscope
+
+[mergetool]
+  keepBackup = false
+  prompt = false
+
+[mergetool "Kaleidoscope"]
+  cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+  trustExitCode = true
+
+[user]
+  signingkey = ~/.ssh/id_ed25519.pub

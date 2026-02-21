@@ -1,0 +1,8 @@
+git:
+  commitPrefix:
+    - pattern: "^(TPSET-\\d+).*"
+      replace: '[$1] '
+gui:
+  mouseEvents: false
+  showFileTree: false
+  tabWidth: 2

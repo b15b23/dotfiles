@@ -1,0 +1,98 @@
+#!/usr/bin/env fish
+
+# Simple CLI for shell-color-scripts
+# This is a port (using Claude Code) of the following to work in the fish shell.
+# Source for this port: https://github.com/charitarthchugh/shell-color-scripts
+# Original work: https://gitlab.com/dwt1/shell-color-scripts
+
+set DIR_COLORSCRIPTS (dirname (status --current-filename))"/colorscripts"
+set fmt_help "  %-20s\t%-54s\n"
+set colorscripts_array (ls "$DIR_COLORSCRIPTS")
+set length_colorscripts (count $colorscripts_array)
+
+function _help
+    echo "Description: A collection of terminal color scripts."
+    echo ""
+    echo "Usage: colorscript [OPTION] [SCRIPT NAME/INDEX]"
+    printf "$fmt_help" \
+        "-h, --help, help" "Print this help." \
+        "-l, --list, list" "List all installed color scripts." \
+        "-r, --random, random" "Run a random color script." \
+        "-e, --exec, exec" "Run a specified color script by SCRIPT NAME or INDEX."
+end
+
+function _list
+    echo "There are $length_colorscripts installed color scripts:"
+    for i in (seq 1 $length_colorscripts)
+        printf "%5s  %s\n" $i $colorscripts_array[$i]
+    end
+end
+
+function _random
+    set random_index (math (random) % $length_colorscripts + 1)
+    set random_colorscript $colorscripts_array[$random_index]
+    echo "$random_colorscript"
+    "$DIR_COLORSCRIPTS/$random_colorscript"
+end
+
+function ifhascolorscipt
+    if test -e "$DIR_COLORSCRIPTS/$argv[1]"
+        echo "Has this color script."
+    end
+end
+
+function _run_by_name
+    if test "$argv[1]" = "random"
+        _random
+    else if test -n (ifhascolorscipt "$argv[1]")
+        "$DIR_COLORSCRIPTS/$argv[1]"
+    else
+        echo "Input error, Don't have color script named $argv[1]."
+        exit 1
+    end
+end
+
+function _run_by_index
+    if test "$argv[1]" -gt 0 -a "$argv[1]" -le "$length_colorscripts"
+        set colorscript $colorscripts_array[$argv[1]]
+        "$DIR_COLORSCRIPTS/$colorscript"
+    else
+        echo "Input error, Don't have color script indexed $argv[1]."
+        exit 1
+    end
+end
+
+function _run_colorscript
+    if string match -q -r '^[0-9]+$' "$argv[1]"
+        _run_by_index "$argv[1]"
+    else
+        _run_by_name "$argv[1]"
+    end
+end
+
+switch (count $argv)
+    case 0
+        _help
+    case 1
+        switch "$argv[1]"
+            case "-h" "--help" "help"
+                _help
+            case "-l" "--list" "list"
+                _list
+            case "-r" "--random" "random"
+                _random
+            case "*"
+                echo "Input error."
+                exit 1
+        end
+    case 2
+        if test "$argv[1]" = "-e"; or test "$argv[1]" = "--exec"; or test "$argv[1]" = "exec"
+            _run_colorscript "$argv[2]"
+        else
+            echo "Input error."
+            exit 1
+        end
+    case "*"
+        echo "Input error, too many arguments."
+        exit 1
+end
