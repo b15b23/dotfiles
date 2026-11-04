@@ -1,5 +1,8 @@
 # .dotfiles
 
+> [!IMPORTANT]
+> This has moved to GitLab
+
 macOS development environment managed with [GNU Stow](https://www.gnu.org/software/stow/manual/).
 
 ## What's in here
